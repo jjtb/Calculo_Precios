@@ -1,0 +1,12 @@
+﻿.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+~$*.xlsx
+~$*.xls
+*.log
+Data_Informacion/ModeloExcel/
+*.xls
+*.xlsx
