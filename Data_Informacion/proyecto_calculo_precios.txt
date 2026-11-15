@@ -1,0 +1,197 @@
+Proyecto de precios por campo
+###  Proyecto
+Desarrollar una aplicación para calcular el precio de hidroarburo (Aceite, Gas y Condendado) de los campos petroleros 
+a partir de las propiedades de campo, y marcadores de precio tanto de Gas, como de Aceite y Condensado.
+
+### Insumos de entrada
+1. Propiedades de hidrocarburo:
+	El archivo se encuentra en D:\Calculo_Precios\Data_Informacion\Propiedades\propiedades_campo.xlsx
+	Campo,	
+	API_Poder_Calorífico,
+	Hidrocarburo,	
+	Unidad,	
+	Tipo_gas_condensado,	
+	Calculado_como_Aceite
+2. Marcadores de precio   
+Los marcadores son precios de referencia y corresponden a valores anuales   
+Los archivoos se encuentran en: D:\Calculo_Precios\Data_Informacion\Marcadores\MarcadoresPROPEMEX
+   VE: VE_PROPEMEX 2027_2042 17.80_20261104.xlsx
+   VS: VS_PROPEMEX 2027_2042 17.80_20261104.xlsx
+   VG: VG_PROPEMEX 2027_2042 17.80_20261104.xlsx
+   - Estos archivos siempres deben de venir en grupos bien identificados por el subfijo de cada archivo
+     VE, Marcadores para el Gas y Condensado, VS: Marcadores para el Aceite y VG: Marcadores para el Gas BN
+   Descripcón de VE (Marcadores de Gas):
+   En el archivo se encuentran estos datos (Bloque 1):   
+	   PGP		Ventas a Gas y Petroquímica Básica		
+	910122	CRUPGPC910122	$/b	Condensados amargos ($/b)	
+	910124	CRUPGPC910124	$/b	Condensados dulces ($/b)	
+	9999131	CRUPGPC9999131	$/b	Crudo ligero Terciario a La Venta ($/b)	
+	910120	CRUPGPC910120	$/Mpc	Gas húmedo amargo ($/Mpc)	
+	910121	CRUPGPC910121	$/Mpc	Gas húmedo dulce ($/Mpc)	
+	910119	CRUPGPC910119	$/Mpc	Gas seco de campos ($/Mpc)	
+	800000	CRUPGPC800000	$/Mpc	Gas húmedo amargo ARENQUE ($/Mpc)	
+		CRUPGPC	$/b	Gas Licuado, Nejo($/b)	
+		CRUPGPC	$/b	Gasolina natural, campo Nejo	
+	911013	CRUPGPC911013	$/t	Azufre ($/t)	
+			$/Mpc	Gas natural de Olmos ($/Mpc)	
+	* Estos marcadores están en pesos hay que convertirlos a dolares 
+	El tipo de cambio se encuentra en el (Bloque 3)
+	TCI	CRUTCICTCI	Tipo de cambio
+
+	En el archivo se encuentran estos datos (Bloque 2):	
+		EXP		Ventas a exportación (US$/bl)*																						
+	8163018	CRUEXPC8163018	US$/b	Crudo Istmo
+	8163019	CRUEXPC8163019	US$/b	Crudo Maya
+	8163021	CRUEXPC8163021	US$/b	Crudo Olmeca
+	910516	CRUEXPC910516	US$/b	Crudo Altamira
+	9107731	CRUEXPC9107731	US$/b	Condensados
+
+	* Solo se utiliza el marcador de Condensados, este marcador ya esta en USD/B
+	
+	Descripcón de VS (Marcadores de Aceite):
+	En el archivo se encuentran estos Datos (Bloque 1):
+	WTS (US$/b)
+	Mezcla de crudos de expo. (US$/b)
+	Istmo (US$/b)
+	Maya (US$/b)
+	Olmeca (US$/b)
+	Zapoteco (US$/b)
+	Gas natural en Reynosa (US$/MMBTU)
+	Henry Hub (US$/MMBTU)
+
+	* En ese bloque hay un marcador de Gas natural en Reynosa, es correcto. 
+
+    Descripcón de VS (Marcadores de Gas BN):
+	En el archivo se encuentran estos Datos (Bloque 1):
+	PEP		Ventas a Exploración y Producción ($/b)		
+	930110	GLPEPC930110	$/Mpc	Gas natural a PEP a compresión ($/Mpc)	
+	930109	GLPEPC930109	$/Mpc	Gas natural a PEP para bombeo neumático  ($/Mpc)	
+	930695	GLPEPC930695	$/b	Naftas incorporadas al crudo ($/b)	
+    
+    * En este bloque solo se ocupa Gas natural a PEP para bombeo neumático y esta en pesos/MPC, 
+	  pasarlo a dolares con el tipo de cambio Precio Publico del bloque 2
+	En el archivo se encuentran estos Datos (Bloque 2):
+	TC		Tipo de cambio																												
+	TCI	GLTCCTCI	Tipo de cambio	Interorganismos		17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80									
+	TCP	GLTCCTCP	Tipo de cambio	Precios Público		17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80	17.80									
+
+3. Tablas de uso  
+    - Tablas de Relación Crudo Ligero/Pesado para llegar a calidad de 16 °API
+	Campo	API		Factor
+	Kayab	8.6		0.4238
+	Ayatsil	10.2	0.3284
+	Utsil	10.2	0.3284
+	Pit		10.8	0.2932
+	Tekel	10.9	0.2874
+   
+   - Tabla: Tipos de marcadores
+    Tipo de Marcador			Descripción 
+	Olmeca (USD/bl)				Marcador de precios de aceite de 39.3 °API
+	Istmo (USD/bl)				Marcador de precios de aceite de 33.6 °API
+	Maya (USD/bl)				Marcador de precios de aceite de 22 °API
+	Altamira (USD/bl)			Marcador de precios de aceite de 15.5 °API
+	*GH Dulce Norte (USD/MPC)		Marcador de precios de gas 
+	*GH Amargo Golfo (USD/MPC)		Marcador de precios de gas
+	*GH Amargo Sureste (USD/MPC)	Marcador de precios de gas
+	*GH Dulce Sureste (USD/MPC)	    Marcador de precios de gas
+	Norte: Condensado dulce (USD/bl)					Marcador de precios de condensado dulce
+	Sur-Sureste: Condensado amargo (USD/bl)				Marcador de precios de condensado amargo
+	Gas natural a DEE para bombeo neumático (USD/MPC)	Marcador de precios de gas de BN para la Cartera de Proyectos
+   
+   - Complejo Procesador de Gas	Tipo de Gas
+    Centro de proceso 									Tipo de Gas
+	CPGB Centro Procesador de Gas Burgos				(GH Dulce Norte)
+	CPGA Centro Procesador de Gas Arenque				(GH Amargo Golfo)
+	CPGPR Centro Procesador de Gas Poza Rica			(GH Amargo Golfo)
+	CPGMP Estación de Compresión de Gas Matapionche		(GH Amargo Golfo)
+	CPGAC Centro Procesador de Gas Área Coatzacoalcos	(GH Dulce Sureste)
+	CPGLV Centro Procesador de Gas La Venta				(GH Dulce Sureste)
+	CPGNP Centro Procesador de Gas Nuevo Pemex			(GH Amargo Sureste)
+	CPGC Centro Procesador de Gas Cactus				(GH Amargo Sureste)
+	CPGCP Centro Procesador de Gas Ciudad Pemex			(GH Amargo Sureste)
+
+4. Catálogo de Campos
+    El D:\Calculo_Precios\Data_Informacion\Catalogo
+	- El catálogo de Campos es el importante y es contra el que vamos a validar.	
+5. Producción de reservas
+   D:\Calculo_Precios\Data_Informacion\Producción
+   - Esta información es solo para los cálculos de precios de Deterioro
+
+### Tipos de precios para los procesos:
+I. Precios para Cartera
+II. Precios para PDEs
+II. Precios para Flujos de Deterioro
+IV. Precios para Cartera Exploración
+V. Precios para Programa Operativo
+
+### Arquitectura y desarrollo 
+- Realizar una herramienta de cálculo de precios para los proceso de la DEE, vamos a desarrollarla
+  con htmlFast, htmx, con css y js que tabajan de forma local
+  - Me gustaría una paleta de colores entre verdosos y amarillos suaves
+  - "Cálculadora de precios de la GIOEE" y le puedes poner un logo
+  - En los entregables siempre poner el Título, el logo, nombre del procesos y fecha de cálculo  
+  - No se almacena nada en base de datos
+  - Todo en archivos parquet y los cálculos son por demanda solo llevar una bitácora de cálculos y resultados 
+  - Vamos a replicar los cálculos de procesos de Cartera y Deterioro y los otros los vamos a definir como nuevos
+  - Simpre hay que implementar los mecánismo de contro y calidad de los insumos para así tener cálculos consistentes. 
+  - Será necesario implementar los graficos necesarios para que visulmente podamos detectar anomalias en los marcadores, las propiedades y reservas cargadas. 
+
+  - Vamos a poner las opciones de Cálculo que son los  tipo de Precios en un panel colapsable en la parte Izquierda
+	- Cada proceso tiene sus insumos y no se comparten aunque los motores de cálculo son iguales estrictamente hablando    
+	- Vamos a implementar un cargador para los catálogos, Propiedades de hidrocarburo 
+	- Primero vamos a replicar los calculos de precios para Cartera y posteriormente ya que hayamos contextualizado este proyecto
+	  avanzamos a los siguientes cálculos.
+  - Revisar el procedimiento operativo vigente: D:\Calculo_Precios\Data_Informacion\Docs\PO PE TC 0057 2026_corregido v2 1.docx
+  
+I. Precios para Cartera 
+   - Usar las propiedades de campo
+     D:\Calculo_Precios\Data_Informacion\Propiedades\PropiedadesCartera-2025\propiedadesCartera_2025.xlsx
+	 
+   - Usar los marcadores: D:\Calculo_Precios\Data_Informacion\Marcadores\MaracdoresCartera-2026
+     marcadores_250225_alto, marcadores_250225_bajo, marcadores_250225_medio, son escenario donde 
+     las propiedades de campo se mantienen.  
+     
+   - Revisar el modelo de cálculo: 
+     D:\Calculo_Precios\Data_Informacion\ModeloExcel\ModeloCartera-2025 
+   - Estos solo los reportes de entrega:
+     D:\Calculo_Precios\Data_Informacion\Entregables\EntregablesCartera-2025\
+     2025 Cartera Alto 20250226.xlsx
+     2025 Cartera Bajo 20250226.xlsx
+     2025 Cartera Medio 20250226.xlsx
+   - Primero revisa bien todo el proceso de cálculo y vamos resolviendo y tomando decisiones. 	 
+II. Precios para PDEs (Pendiente)
+II. Precios para Flujos de Deterioro
+     - Usar las propiedades de campo: D:\Calculo_Precios\Data_Informacion\
+	 PropiedadesDeterioro-2026\\3T-2026\propiedades_campo_3T-2026.xlsx
+	 - Usar la producción: D:\Calculo_Precios\Data_Informacion\Producción\3T-2026\SOL PRECIOS 3T 2026 20260923 enviada.xlsx	 
+	 - Usar los marcodores de precio para deterioro: D:\Calculo_Precios\Data_Informacion\Marcadores\MarcadoresDeterioro-2026\3T-2026
+	   - VE_Deterioro 3T2026_TC 17.40_20260918.xlsx
+       - VS_Deterioro 3T2026_TC 17.40_20260918.xlsx
+       - Solo se ocupan esos dos archivos el Gas BN no se cálcula en este proceso.   	   
+	 - Primero revisa bien todo el proceso de cálculo y vamos resolviendo y tomando decisiones. 	 
+	   No ejecutes nada hasta que hayamos concluido las observaciones de cálculo 
+	 - Procesos de cálculo de los precios para los flujos de Deterioro
+	   - 1. Cargar las propiedades de los hidrocarburos
+	   - 2. Cargar los marcadores de precio:	        
+	   - 3. Cargar la producción de los campos.
+            - Solo usar los hidrocarburos de Aceite, Gas y Condensados
+              - Validar que ningún campo de producción se quede sin propiedades, hay que validar 
+                el campo, Si es Aceite debe existir el API, si es gas debe existir el BTU, están en 
+				la misma columna: API_Poder_Calorífico de las propiedades
+				
+              - Calcular los precios por campo con el mismo metodo de cálculo es el mismo que se utilizó para los precios por campo de la Cartera
+			    de solo los campos que vienen en el archivo de producción  
+              - Aquí hay diferentes niveles de cálculo:
+                - Nivel Campo
+				  Replicar este modelo: Precios Deterioro_3T_2026_v_18_09_2026 - compacto.xlsx
+				- Nivel UGE
+				  Replicar este modelo: Modelo_Calculo_Precios_UGEs_3T_2026_v_18_09_2026.xlsx 
+                - Nivel Contratos
+				  Replicar este modelo: Modelo_Calculo_Precios_CONTRATOS_3T_2026_v_18_09_2026.xlsx
+                - Nivel Subdirección
+				  Replicar este modelo: Modelo_Calculo_Precios_SUBDIRECCION_3T_2026_v_18_09_2026.xlsx
+                - Nivel DEE o PEP				
+				  Replicar este modelo: Modelo_Calculo_Precios_PEP_3T_2026_v_18_09_2026.xlsx
+IV. Precios para Cartera Exploración (Pendiente)
+V. Precios para Programa Operativo (Pendiente)    
+
